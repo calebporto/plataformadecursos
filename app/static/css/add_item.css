@@ -1,0 +1,19 @@
+.container.header, .d-grid.gap-2.button-submit, .mb-3.media, .mb-3.file {
+    margin-top: 5rem;
+    margin-bottom: 5rem;
+}
+.container.header {
+    border-color: black;
+    border-style: groove;
+    padding: 2rem;
+}
+.btn.btn-primary.submit, .btn.btn-secondary.submit {
+    padding: 1rem;
+    font-size: large;
+}
+.responsive-label {
+    width: 100%;
+}
+.mb-3.inputs {
+    display: inline-flex;
+}

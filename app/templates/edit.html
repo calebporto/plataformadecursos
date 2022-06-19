@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" 
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/static/css/add_item.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="/static/js/jquery.mask.min.js"></script>
+    <title>Estéfany Gama - Painel Administrativo - Editar {{ data['type_ptbr'] }}</title>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#price").mask("99.999,99", {reverse: true});
+        })
+    </script>
+</head>
+<body>
+    {% if message["error"] == True %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Erro!</strong> {{ message["message"] }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endif %}
+    <div class="container header">
+        <div class="position-relative">
+            <h1 class="display-4 text-center"><b>{{ data['type_ptbr'] }}:</b> {{ data_db.name }}</h1>
+        </div>
+    </div>
+    <div class="container">
+        {% if data['type'] == 'course' %}
+        <form action="/admin-panel/courses/edit" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="id" value="{{ data_db.id }}">
+            <input type="hidden" name="type" value="{{ data['type'] }}">
+            <div class="mb-3">
+                <label class="form-label"><b>Nome do Curso:</b> {{ data_db.name }}</label>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExamplename" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExamplename">
+                    <div class="card card-body">
+                        <input type="text" class="form-control" name="name" minlength="6" maxlength="50" placeholder="Digite aqui o novo nome">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><b>Preço:</b> {{ data_db.price }}</label>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExampleprice" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExampleprice">
+                    <div class="card card-body">
+                        <input type="text" class="form-control" id="price" name="price" placeholder="Digite aqui o novo preço">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">
+                    {% if data_db.level == 'easy' %}
+                    <b>Nível do curso:</b> Iniciante
+                    {% elif data_db.level == 'medium' %}
+                    <b>Nível do curso:</b> Intermediário
+                    {% elif data_db.level == 'hard' %}
+                    <b>Nível do curso:</b> Avançado
+                    {% endif %}
+                </label>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExamplelevel" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExamplelevel">
+                    <div class="card card-body">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" value="easy">
+                            <label class="form-check-label" for="flexRadioDefault1">
+                            Iniciante
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" value="medium">
+                            <label class="form-check-label" for="flexRadioDefault2">
+                            Intermediário
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" value="hard">
+                            <label class="form-check-label" for="flexRadioDefault3">
+                            Avançado
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="text-wrap text-break text-start mb-2" style="width: 100%;">
+                    <b>Descrição:</b> {{ data_db.description }}
+                </div>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExampledescription" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExampledescription">
+                    <div class="card card-body">
+                        <textarea class="form-control" name="description" rows="6" cols="50" placeholder="Escreva aqui a descrição detalhada do curso."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">
+                    {% if data_db.is_active == True %}
+                    <b>Aberto para vendas?</b> Sim
+                    {% else: %}
+                    <b>Aberto para vendas?</b> Não
+                    {% endif %}
+                </label>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExampleis_active" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExampleis_active">
+                    <div class="card card-body">
+                        {% if data_db.is_active == True %}
+                        <input class="form-check-input" type="checkbox" name="is_active" value="y" id="flexCheckDefault" checked>
+                        {% else: %}
+                        <input class="form-check-input" type="checkbox" name="is_active" value="y" id="flexCheckDefault">
+                        {% endif %}
+                        <label class="form-check-label" for="flexCheckDefault">
+                            Marque a caixa se a resposta for Sim.
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 media">
+                <label class="form-label">
+                    <br>
+                    <h4>Arquivos de imagem e vídeo para o curso.</h4>
+                    <br>
+                    <p><strong>Atenção:</strong> As dimensões dos vídeos e imagens devem ser respeitadas!</p>
+                </label>
+            </div>
+            <div class="mb-3 file">
+                <label for="formFile" class="form-label"><p><strong>Banner de apresentação</strong></p><b>Dimensões:</b> 650x650 px<br><b>Formato:</b> PNG</label>
+                <div class="mb-3">
+                    <img src="/static/media/{{ data_db.banner_1 }}" alt="" width="100%" height="auto">
+                </div>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExamplebanner_1" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExamplebanner_1">
+                    <div class="card card-body">
+                        <label for="formFile" class="form-label"><p><strong>Banner de apresentação</strong></p><b>Dimensões:</b> 650x650 px<br><b>Formato:</b> PNG</label>
+                        <input class="form-control" type="file" name="image_1" id="formFile" accept=".png">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 file">
+                <label for="formFile" class="form-label"><p><strong>Imagem de cabeçalho da descrição do curso</strong></p><b>Dimensões:</b> 1300x250 px<br><b>Formato:</b> PNG</label>
+                <div class="mb-3">
+                    <img src="/static/media/{{ data_db.banner_2 }}" alt="" width="100%" height="auto">
+                </div>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExamplebanner_2" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExamplebanner_2">
+                    <div class="card card-body">
+                        <label for="formFile" class="form-label"><p><strong>Imagem de cabeçalho da descrição do curso</strong></p><b>Dimensões:</b> 1300x250 px<br><b>Formato:</b> PNG</label>
+                        <input class="form-control" type="file" name="image_2" id="formFile" accept=".png">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 file">
+                <div class="mb-3">
+                    <label for="formFile" class="form-label"><p><strong>Vídeo de apresentação do curso</strong></p></label>
+                    {{ data_db.video_1 | safe }}
+                </div>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExamplevideo_1" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExamplevideo_1">
+                    <div class="card card-body">
+                        <label for="formFile" class="form-label"><p><strong>Vídeo de apresentação do curso</strong></p><b>Plataformas de vídeo:</b> Youtube ou Vimeo<br><b>Obs:</b> Usar a tag "incorporar" ao invés de copiar o link.</label>
+                        <textarea class="form-control" name="video_1" rows="6" cols="50" placeholder="Cole aqui o link de incorporação"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="d-grid gap-2 mb-1 button-submit">
+                <button class="btn btn-primary submit" type="submit"><b>Confirmar Alterações</b></button>
+            </div>
+        </form>
+        <form action="/admin-panel/courses">
+            <div class="d-grid gap-2 mt-1 button-submit">
+                <button class="btn btn-secondary submit" type="submit"><b>Cancelar</b></button>
+            </div>
+        </form>
+        {% elif data['type'] == 'module' %}
+        <form action="/admin-panel/courses/edit" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="id" value="{{ data_db.id }}">
+            <input type="hidden" name="type" value="{{ data['type'] }}">
+            <div class="mb-3">
+                <label class="form-label"><b>Nome do Módulo:</b> {{ data_db.name }}</label>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExamplename" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExamplename">
+                    <div class="card card-body">
+                        <input type="text" class="form-control" name="name" minlength="6" maxlength="20" placeholder="Digite aqui o novo nome">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="text-wrap text-break text-start mb-2" style="width: 100%;">
+                    <b>Descrição:</b> {{ data_db.description }}
+                </div>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExampledescription" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExampledescription">
+                    <div class="card card-body">
+                        <textarea class="form-control" name="description" rows="6" cols="50" placeholder="Escreva aqui a descrição detalhada do módulo."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><b>Professora:</b> {{ data_db.teacher }}</label>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExampleteacher" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExampleteacher">
+                    <div class="card card-body">
+                        <input type="text" class="form-control" name="teacher" minlength="6" maxlength="20">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 media">
+                <label class="form-label">
+                    <br>
+                    <h4>Arquivos de imagem e vídeo para o módulo.</h4>
+                    <br>
+                    <p><strong>Atenção:</strong> As dimensões dos vídeos e imagens devem ser respeitadas!</p>
+                </label>
+            </div>
+            <div class="mb-3 file">
+                <label for="formFile" class="form-label"><p><strong>Imagem de cabeçalho da descrição do módulo</strong></p></label>
+                <div class="mb-3">
+                    <img src="/static/media/{{ data_db.banner_1 }}" alt="" width="100%" height="auto">
+                </div>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExampledescription" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExampledescription">
+                    <div class="card card-body">                        
+                        <label for="formFile" class="form-label"><p><strong>Imagem de cabeçalho da descrição do módulo</strong></p><b>Dimensões:</b> 1300x250 px<br><b>Formato:</b> PNG</label>
+                        <input class="form-control" type="file" name="image_1" id="formFile" accept=".png">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 file">
+                <div class="mb-3">
+                    <label for="formFile" class="form-label"><p><strong>Vídeo de apresentação do módulo</strong></p></label>
+                    {{ data_db.video_1 | safe }}
+                </div>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExamplevideo_1" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExamplevideo_1">
+                    <div class="card card-body">
+                        <label for="formFile" class="form-label"><p><strong>Vídeo de apresentação do módulo</strong></p><b>Plataformas de vídeo:</b> Youtube ou Vimeo<br><b>Obs:</b> Usar a tag "incorporar" ao invés de copiar o link.</label>
+                        <textarea class="form-control" name="video_1" rows="6" cols="50" placeholder="Cole aqui o link de incorporação"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="d-grid gap-2 mb-1 button-submit">
+                <button class="btn btn-primary submit" type="submit"><b>Confirmar Alterações</b></button>
+            </div>
+        </form>
+        <form action="/admin-panel/courses">
+            <div class="d-grid gap-2 mt-1 button-submit">
+                <button class="btn btn-secondary submit" type="submit"><b>Cancelar</b></button>
+            </div>
+        </form>
+        {% elif data['type'] == 'class' %}
+        <form action="/admin-panel/courses/edit" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="id" value="{{ data_db.id }}">
+            <input type="hidden" name="type" value="{{ data['type'] }}">
+            <div class="mb-3">
+                <label class="form-label"><b>Nome da Aula:</b> {{ data_db.name }}</label>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExamplename" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExamplename">
+                    <div class="card card-body">
+                        <input type="text" class="form-control" name="name" minlength="6" maxlength="50" placeholder="Digite aqui o novo nome">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="text-wrap text-break text-start mb-2" style="width: 100%;">
+                    <b>Descrição:</b> {{ data_db.description }}
+                </div>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExampledescription" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExampledescription">
+                    <div class="card card-body">
+                        <textarea class="form-control" name="description" rows="6" cols="50" minlength="6" maxlength="200" placeholder="Escreva aqui a descrição detalhada do módulo."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><b>Professora:</b> {{ data_db.teacher }}</label>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExampleteacher" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExampleteacher">
+                    <div class="card card-body">
+                        <input type="text" class="form-control" name="teacher" minlength="4" maxlength="50">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><b>Duração (Horas : Minutos):</b> {{ data_db.duration }}</label>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExampleduration" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExampleduration">
+                    <div class="mb">
+                        <label class="form-label"><b>Duração da aula</b></label>
+                    </div>
+                    <div class="mb-3 inputs">
+                        <div class="col-mb-25">
+                            <label class="form-label"><b>Horas</b></label>
+                            <input type="number" class="form-control" name="hours" maxlength="2" minlength="1" min="0" max="99" required>
+                        </div>
+                        <div class="col-mb-25">
+                            <label class="form-label"><b>Minutos</b></label>
+                            <input type="number" class="form-control" name="minutes" minlength="1" maxlength="2" min="0" max="59" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 media">
+                <label class="form-label">
+                    <br>
+                    <h4>Arquivos de imagem e vídeo para o módulo.</h4>
+                    <br>
+                    <p><strong>Atenção:</strong> As dimensões dos vídeos e imagens devem ser respeitadas!</p>
+                </label>
+            </div>
+            <div class="mb-3 file">
+                <label for="formFile" class="form-label"><p><strong>Imagem de cabeçalho da descrição da aula</strong></p></label>
+                <div class="mb-3">
+                    <img src="/static/media/{{ data_db.banner_1 }}" alt="" width="100%" height="auto">
+                </div>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExampleimage_1" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExampleimage_1">
+                    <div class="card card-body">
+                        <label for="formFile" class="form-label"><p><strong>Imagem de cabeçalho da descrição da aula</strong></p><b>Dimensões:</b> 1300x250 px<br><b>Formato:</b> PNG</label>
+                        <input class="form-control" type="file" name="image_1" id="formFile" accept=".png">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3 file">
+                <div class="mb-3">
+                    <label for="formFile" class="form-label"><p><strong>Vídeo de apresentação da aula</strong></p></label>
+                    {{ data_db.video_1 | safe }}
+                </div>
+                <p>
+                    <button class="btn btn-primary p-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExamplevideo_1" aria-expanded="false" aria-controls="collapseExample">
+                        Clique para editar
+                    </button>
+                </p>
+                <div class="collapse" id="collapseExamplevideo_1">
+                    <div class="card card-body">
+                        <label class="form-label"><p><strong>Vídeo da aula</strong></p><b>Plataformas de vídeo:</b> Youtube ou Vimeo<br><b>Obs:</b> Usar a tag "incorporar" ao invés de copiar o link.</label>
+                        <textarea class="form-control" name="video_1" rows="6" cols="50" placeholder="Cole aqui o link de incorporação"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="d-grid gap-2 button-submit">
+                <button class="btn btn-primary submit" type="submit"><b>Confirmar Alterações</b></button>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+</body>
+</html>
