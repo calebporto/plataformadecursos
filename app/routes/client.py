@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, request, redirect, url_for
-from app.models import User
+from app.models.tables import User
 from flask_login import current_user, login_required, login_user, logout_user
 
 

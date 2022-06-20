@@ -1,8 +1,7 @@
-from app import app, db, UPLOAD_FOLDER
 from flask import render_template, request, redirect
-from app.models import User, Course, Module, Class
 from flask_login import current_user, login_required
-from werkzeug.utils import secure_filename
+from app.models.tables import Course, Module, Class
+from app import app, db, UPLOAD_FOLDER
 from secrets import token_hex
 from datetime import datetime
 import os
@@ -155,8 +154,8 @@ def add_class():
         name = request.form.get('name')
         description = request.form.get('description')
         teacher = request.form.get('teacher')
-        hours = request.form.get('hours')
-        minutes = request.form.get('minutes')
+        hours = int(request.form.get('hours'))
+        minutes = int(request.form.get('minutes'))
         image_1 = request.files.get('image_1')
         video_1 = request.form.get('video_1')
 
@@ -256,6 +255,15 @@ def delete():
                     db.session.delete(clas)
                     db.session.commit()
 
+            # Atualizando index
+            classes = Class.query.all()
+            for i, clas in enumerate(classes):
+                clas.index = i + 1
+                db.session.add(clas)
+                db.session.commit()
+
+
+
         if module_del:
             # Para deletar o módulo, primeiro tem que deletar as aulas do módulo por causa das ForeignKeys
             modules = Module.query.filter(Module.id == module_del).all()
@@ -277,6 +285,13 @@ def delete():
                     db.session.delete(module)
                     db.session.commit()
 
+            # Atualizando index
+            modules = Module.query.all()
+            for i, module in enumerate(modules):
+                module.index = i + 1
+                db.session.add(module)
+                db.session.commit()
+
 
         if course_del:
             # Para deletar o curso, primeiro tem que deletar as aulas e módulos, por causa das ForeignKeys
@@ -295,6 +310,14 @@ def delete():
                 for course in courses:
                     db.session.delete(course)
                     db.session.commit()
+
+            # Atualizando indes
+            courses = Course.query.all()
+            for i, course in enumerate(courses):
+                course.index = i + 1
+                db.session.add(course)
+                db.session.commit()
+            
 
         return redirect("/admin-panel/courses")
 
@@ -420,17 +443,69 @@ def edit():
             return redirect('/admin-panel/courses')            
 
         if edit_type == 'class':
-            class_data_columns = ['name', 'description', 'teacher', 'video_1']
+            class_data_form = ['name', 'description', 'teacher', 'hours', 'minutes', 'video_1']
 
-            module_data_query = Module.query.filter(Module.id == request.form.get('id')).first()
+            class_data_query = Class.query.filter(Class.id == request.form.get('id')).first()
+
+            hours = 0
+            minutes = 0
             
-            # Atualizando o last_update do curso
-            course_of_module = Course.query.filter(Course.id == module_data_query.course_id).first()
-            course_of_module.last_update = datetime.utcnow()
-            db.session.add(course_of_module)
+            for input in class_data_form:
+                input_data = request.form.get(input)
+                if input_data:
+                    if input == 'name':
+                        class_data_query.name = input_data
+                    elif input == 'description':
+                        class_data_query.description = input_data
+                    elif input == 'teacher':
+                        class_data_query.teacher = input_data
+                    elif input == 'hours':
+                        hours = int(input_data)
+                    elif input == 'minutes':
+                        minutes = int(input_data)
+                    elif input == 'video_1':
+                        class_data_query.video_1 = input_data
+            
+            form_file = request.files.get('image_1')
+            if form_file:
+                try:
+                    os.remove(f'app/static/media/{class_data_query.banner_1}')
+                    file_path = os.path.join(UPLOAD_FOLDER, class_data_query.banner_1)
+                    form_file.save(file_path)
+                except:
+                    return 'Erro ao salvar arquivo de imagem'
+
+            
+            decimal_duration = time_to_decimal(hours, minutes)
+
+            # Atualizando last_update e workload do curso
+            course_of_class = Course.query.filter(Course.id == class_data_query.course_id).first()
+            course_of_class.last_update = datetime.utcnow()
+
+            # Atualizando last_update e workload do módulo
+            module_of_class = Module.query.filter(Module.id == class_data_query.module_id).first()
+            module_of_class.last_update = datetime.utcnow()
+
+            class_data_query.last_update = datetime.utcnow()
+            if hours > 0 or minutes > 0:
+                class_data_query.duration = decimal_duration
+                course_workload = str(round(((float(course_of_class.workload) - float(class_data_query.duration)) + decimal_duration), 2))
+                course_of_class.workload = course_workload
+
+                module_workload = str(round(((float(module_of_class.workload) - float(class_data_query.duration)) + decimal_duration), 2))
+                module_of_class.workload = module_workload
+
+            
+            db.session.add(course_of_class)
+            db.session.commit()
+            
+            db.session.add(module_of_class)
             db.session.commit()
 
-            module_data_query.last_update = datetime.utcnow()
+            db.session.add(class_data_query)
+            db.session.commit()
+
+            return redirect('/admin-panel/courses')
 
 
         return redirect('/admin-panel/courses')

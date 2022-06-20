@@ -362,11 +362,11 @@
                     <div class="mb-3 inputs">
                         <div class="col-mb-25">
                             <label class="form-label"><b>Horas</b></label>
-                            <input type="number" class="form-control" name="hours" maxlength="2" minlength="1" min="0" max="99" required>
+                            <input type="number" class="form-control" name="hours" maxlength="2" minlength="1" min="0" max="99" value="00">
                         </div>
                         <div class="col-mb-25">
                             <label class="form-label"><b>Minutos</b></label>
-                            <input type="number" class="form-control" name="minutes" minlength="1" maxlength="2" min="0" max="59" required>
+                            <input type="number" class="form-control" name="minutes" minlength="1" maxlength="2" min="0" max="59" value="00">
                         </div>
                     </div>
                 </div>
@@ -413,8 +413,13 @@
                     </div>
                 </div>
             </div>
-            <div class="d-grid gap-2 button-submit">
+            <div class="d-grid gap-2 mb-1 button-submit">
                 <button class="btn btn-primary submit" type="submit"><b>Confirmar Alterações</b></button>
+            </div>
+        </form>
+        <form action="/admin-panel/courses">
+            <div class="d-grid gap-2 mt-1 button-submit">
+                <button class="btn btn-secondary submit" type="submit"><b>Cancelar</b></button>
             </div>
         </form>
         {% endif %}
