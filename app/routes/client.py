@@ -1,7 +1,7 @@
-from app import app, db
-from flask import render_template, request, redirect, url_for
-from app.models.tables import User
 from flask_login import current_user, login_required, login_user, logout_user
+from flask import render_template, request, redirect, session, url_for
+from app.models.tables import Course_per_client, User, Course
+from app import app, db
 
 
 message = [{"message": "A entrada de usuário viola nossos padrões de segurança", "error":True},  # Mensagem para possível SQL Injection
@@ -35,13 +35,10 @@ def register():
 
         # Detectando SQL Injection e Validando dados do usuário
         for input in [name, email, login]:
-            print (input)
-            if User.sql_injection_detect(input.lower()):
-                return render_template('register.html', message=message[0])
             if len(input) > 45 or len(input) < 8:
                 return render_template('register.html', message=message[2])
         
-        if sql_injection_detect(cpf.lower()) or not cpf.isdigit() or len(cpf) != 11:
+        if not cpf.isdigit() or len(cpf) != 11:
             return render_template("register.html", message=message[3])
         
         if len(senha) < 8 or len(senha) > 20 or senha != confirmation:
@@ -77,9 +74,6 @@ def login():
         # Requests de entradas do usuário
         login = request.form.get("login")
         pwd = request.form.get("pwd")
-        # Checando nome de usuário
-        if sql_injection_detect(login) == True:
-            return render_template("login.html", message=message[0])
         
         # Buscando usuário pelo input fornecido, que pode ser email, cpf ou login
         user = User.query.filter((User.email == login) | (User.CPF == login) | (User.login == login)).first()
@@ -88,11 +82,13 @@ def login():
         if not user or not user.verify_password(pwd):
             return render_template("login.html", message=message[1])
 
-        print(user.is_admin)
+        login_user(user, remember=True)
 
-        login_user(user)
+        if 'next' in session:
+            next = session['next']
 
-        print(current_user.is_admin)
+            if next is not None:
+                return redirect(next)
 
         return redirect(url_for("panel"))
 
@@ -113,18 +109,14 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/panel')
+@app.route('/painel')
 @login_required
 def panel():
-    print(current_user.is_admin, current_user.name)
-    return render_template('panel.html')
+    username = (current_user.name).split()[0].title()  # obtendo apenas o primeiro nome e colocando a primeira letra em maiúsculo
+    client_courses =  Course.query.join(Course_per_client).filter(Course_per_client.user_id == current_user.id).all()
 
+    return render_template('painel.html', username=username, client_courses=client_courses)
 
-# Função para detectar possíveis ataques de SQL Injection
-def sql_injection_detect(input):
-    injections = ['--', ' select ', ' insert ', ' delete ', ' drop ', ' update ', ' union ', ' create ', ' or ']
-    
-    for injection in injections:
-        if injection in input.lower():
-            return True
-    return False
+@app.route('/cursos')
+def cursos():
+    return render_template('cursos.html')

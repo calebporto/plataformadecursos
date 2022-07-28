@@ -6,7 +6,7 @@
 }
 
 .banner-image {
-    background-image: url(/app/static/media/index/background.jpg);
+    background-image: url(/static/media/index/background.jpg);
     background-size: cover;
     background-position: center;
     
@@ -90,7 +90,7 @@
 
 @media(max-width: 768px) {
     .banner-image {
-        background-image: url(/app/static/media/index/background_mobile3.jpg);
+        background-image: url(/static/media/index/background_mobile3.jpg);
         background-size: cover;
         background-position: center;
     }

@@ -18,6 +18,7 @@ class User(db.Model, UserMixin):
     login = db.Column(db.String(45), nullable=False, unique=True)
     hash = db.Column(db.String(256), nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
+    user_id = db.relationship("Course_per_client")
 
     def __init__(self, name, email, CPF, login, password, is_admin):
         self.name = name
@@ -86,6 +87,7 @@ class Course(db.Model):
     video_2 = db.Column(db.String(20))
     course_id_rel = db.relationship("Module")
     class_course = db.relationship("Class")
+    course_id = db.relationship("Course_per_client")
 
     def __init__(self, name, price, description, level, creation_date, is_active, banner_1, banner_2, video_1, last_update=NULL, video_2=NULL, workload=NULL):
         self.name = name
